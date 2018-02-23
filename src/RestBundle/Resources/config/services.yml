@@ -1,0 +1,23 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  DavesWeblab\RestBundle\Controller\:
+    resource: '../../Controller'
+    public: true
+    tags: ['controller.service_arguments']
+
+  dwl.rest.serializer:
+    class: DavesWeblab\RestBundle\Serializer\Serializer
+    public: true
+
+  dwl.rest.data:
+    class: DavesWeblab\RestBundle\Data\DataType
+    public: true
+
+  dwl.rest.event_listener.json_body:
+    class: DavesWeblab\RestBundle\EventListener\JsonBodyListener
+    tags:
+      - { name: kernel.event_listener, event: kernel.controller }

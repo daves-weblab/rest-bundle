@@ -1,0 +1,5 @@
+daves_weblab_rest:
+    resource: "@DavesWeblabRestBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
