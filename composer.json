@@ -1,5 +1,6 @@
 {
   "name": "daves-weblab/rest-bundle",
+  "version": "0.7",
   "license": "GPL-3.0-or-later",
   "type": "pimcore-bundle",
   "config": {
@@ -11,12 +12,7 @@
   "autoload": {
     "psr-4": {
       "DavesWeblab\\": "src/"
-    },
-    "exclude-from-classmap": [
-      "frontend/",
-      "frontend-samples/",
-      "install/"
-    ]
+    }
   },
   "extra": {
     "pimcore": {

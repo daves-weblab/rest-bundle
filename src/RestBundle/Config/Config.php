@@ -47,22 +47,39 @@ class Config
     /**
      * @return \Pimcore\Config\Config
      */
-    public function getDenormalizationConfig() {
+    public function getDenormalizationConfig()
+    {
         return $this->getConfigIfAvailable("denormalization");
     }
 
     /**
      * @return string[]
      */
-    public function getContextConfig() {
-        return $this->config->get("context", [RestContext::class]);
+    public function getContextConfig()
+    {
+        $default = [RestContext::class];
+
+        $config = $this->config->get("context");
+
+        if (!$config) {
+            return $default;
+        }
+
+        return $config->toArray() ?: $default;
     }
 
     /**
      * @return array
      */
-    public function getComputeds() {
-        return $this->config->get("computeds", []);
+    public function getComputeds()
+    {
+        $config = $this->config->get("computeds");
+
+        if (!$config) {
+            return [];
+        }
+
+        return $config->toArray() ?: [];
     }
 
     /**
@@ -102,6 +119,12 @@ class Config
          */
         $viewConfig = $config->get($view);
 
+        // fallback, view is "default" try the object declaration directly
+        if ($view === "default" && !$viewConfig) {
+            $viewConfig = $config;
+        }
+
+        // view config not found
         if (!$viewConfig) {
             return ViewDefinition::emptyViewDefinition();
         }

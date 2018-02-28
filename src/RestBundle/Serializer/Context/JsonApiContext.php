@@ -30,7 +30,7 @@ class JsonApiContext extends RestContext
 
         $namespace = $this->getNamespace($data);
 
-        $root = empty($this->json);
+        $root = empty($this->json) || $namespace === $this->rootNamespace;
 
         if (!$root && !$this->areRelationsIncluded()) {
             return;
@@ -40,7 +40,7 @@ class JsonApiContext extends RestContext
 
         $attribute = $root ? "data" : "included";
 
-        if ($root || $namespace == $this->rootNamespace) {
+        if ($root) {
             $this->rootNamespace = $namespace;
             $entity->setRoot(true);
         }
@@ -51,7 +51,12 @@ class JsonApiContext extends RestContext
             }
         } else if ($root) {
             $entity->set("type", $namespace);
-            $this->json[$attribute] = $entity;
+
+            if(!array_key_exists($attribute, $this->json)) {
+                $this->json[$attribute] = $entity;
+            } else {
+                $this->json[$attribute][] = $entity;
+            }
         } else {
             if (!array_key_exists($attribute, $this->json)) {
                 $this->json[$attribute] = [];

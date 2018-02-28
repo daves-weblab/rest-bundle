@@ -101,7 +101,7 @@ class Factory
             DataObjectDenormalizer::class,
             ImageDenormalizer::class,
             DateDenormalizer::class
-        ], $denormalization->get("denormalizer"));
+        ], $denormalization->get("denormalizer", []));
 
         foreach ($denormalizers as $denormalizer) {
             $this->denormalizers[] = $this->buildDenormalizer($denormalizer);

@@ -22,6 +22,7 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('daves_weblab_rest');
 
         $this->addDataType($rootNode);
+        $this->addContext($rootNode);
         $this->addNormalization($rootNode);
         $this->addDenormalization($rootNode);
         $this->addComputeds($rootNode);
@@ -49,6 +50,16 @@ class Configuration implements ConfigurationInterface
             ->end();
     }
 
+    protected function addContext(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode("context")
+                    ->scalarPrototype()->end()
+                ->end()
+            ->end();
+    }
+
     protected function addNormalization(ArrayNodeDefinition $node)
     {
         $node
@@ -62,11 +73,6 @@ class Configuration implements ConfigurationInterface
 
                         // list of normalization transformers
                         ->arrayNode("transformer")
-                            ->scalarPrototype()->end()
-                        ->end()
-
-                        // list of context classes
-                        ->arrayNode("context")
                             ->scalarPrototype()->end()
                         ->end()
                     ->end()
