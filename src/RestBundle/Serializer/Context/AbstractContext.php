@@ -5,6 +5,7 @@ namespace DavesWeblab\RestBundle\Serializer\Context;
 use DavesWeblab\RestBundle\Config\Config;
 use DavesWeblab\RestBundle\Data\DataType;
 use DavesWeblab\RestBundle\Normalizer\Transformer\Transformer;
+use DavesWeblab\RestBundle\Property\Computed;
 use DavesWeblab\RestBundle\Serializer\EntityInterface;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
@@ -46,6 +47,27 @@ abstract class AbstractContext implements ContextInterface
     private $dataType;
 
     /**
+     * @var Computed[] $computeds
+     */
+    private $computeds = [];
+
+    /**
+     * @param Computed[] $computeds
+     */
+    public function setComputeds(array $computeds = [])
+    {
+        $this->computeds = $computeds;
+    }
+
+    /**
+     * @param Computed[] $computeds
+     */
+    public function addComputeds(array $computeds = [])
+    {
+        $this->computeds = array_unique(array_merge($this->computeds, $computeds));
+    }
+
+    /**
      * @param DataType $dataType
      */
     public function setDataType(DataType $dataType)
@@ -58,7 +80,7 @@ abstract class AbstractContext implements ContextInterface
      */
     public function isRelation(Data $fieldDefinition = null)
     {
-        if(!$fieldDefinition) {
+        if (!$fieldDefinition) {
             return false;
         }
 

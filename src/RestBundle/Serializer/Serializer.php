@@ -3,22 +3,10 @@
 namespace DavesWeblab\RestBundle\Serializer;
 
 use DavesWeblab\RestBundle\Data\DataType;
-use DavesWeblab\RestBundle\Denormalizer\DataObjectDenormalizer;
-use DavesWeblab\RestBundle\Denormalizer\DateDenormalizer;
-use DavesWeblab\RestBundle\Denormalizer\DenormalizerInterface;
-use DavesWeblab\RestBundle\Denormalizer\ImageDenormalizer;
-use DavesWeblab\RestBundle\Normalizer\AssetNormalizer;
-use DavesWeblab\RestBundle\Normalizer\FieldCollectionNormalizer;
+use DavesWeblab\RestBundle\Factory\Factory;
 use DavesWeblab\RestBundle\Normalizer\NormalizerInterface;
-use DavesWeblab\RestBundle\Normalizer\ObjectNormalizer;
-use DavesWeblab\RestBundle\Normalizer\Transformer\DateTransformer;
-use DavesWeblab\RestBundle\Normalizer\Transformer\FieldCollectionAsIdTransformer;
-use DavesWeblab\RestBundle\Normalizer\Transformer\MultiselectTransformer;
-use DavesWeblab\RestBundle\Normalizer\Transformer\RelationAsIdTransformer;
-use DavesWeblab\RestBundle\Normalizer\Transformer\Transformer;
+use DavesWeblab\RestBundle\Property\Computed;
 use DavesWeblab\RestBundle\Serializer\Context\ContextInterface;
-use DavesWeblab\RestBundle\Serializer\Context\JsonApiContext;
-use DavesWeblab\RestBundle\Serializer\Context\RestContext;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Fieldcollection;
@@ -27,67 +15,19 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class Serializer
 {
     /**
-     * @var \DavesWeblab\RestBundle\Config\Config $config
-     */
-    private $config;
-
-    /**
      * @var DataType $dataType
      */
     private $dataType;
 
     /**
-     * @var NormalizerInterface[] $normalizers
+     * @var Factory $factory
      */
-    private $normalizers = [];
+    private $factory;
 
-    /**
-     * @var Transformer[] $normalizeTransformers
-     */
-    private $normalizeTransformers = [];
-
-    /**
-     * @var string[] $contextDefinitions
-     */
-    private $contextDefinitions = [];
-
-    /**
-     * @var DenormalizerInterface[] $denormalizers
-     */
-    private $denormalizers = [];
-
-    public function __construct(\DavesWeblab\RestBundle\Config\Config $config, DataType $dataType)
+    public function __construct(DataType $dataType, Factory $factory)
     {
-        $this->config = $config;
         $this->dataType = $dataType;
-
-        $normalization = $config->getNormalizationConfig();
-
-        // merge normalizers from normalization config if available
-        $this->normalizers = array_merge([
-            new ObjectNormalizer(),
-            new FieldCollectionNormalizer(),
-            new AssetNormalizer()
-        ], $normalization->get("normalizer", []));
-
-        // merge transformers from normalization config if available
-        $this->normalizeTransformers = array_merge([
-            new RelationAsIdTransformer(),
-            new FieldCollectionAsIdTransformer(),
-            new DateTransformer(),
-            new MultiselectTransformer()
-        ], $normalization->get("transformer", []));
-
-        // merge contexts from normalization config if available
-        $this->contextDefinitions = array_merge([
-            JsonApiContext::class
-        ], $normalization->get("context", []));
-
-        $this->denormalizers = [
-            new DataObjectDenormalizer($dataType),
-            new ImageDenormalizer($dataType),
-            new DateDenormalizer($dataType)
-        ];
+        $this->factory = $factory;
     }
 
     /**
@@ -97,7 +37,7 @@ class Serializer
      */
     protected function getNormalizer($data)
     {
-        foreach ($this->normalizers as $normalizer) {
+        foreach ($this->factory->getNormalizers() as $normalizer) {
             if ($normalizer->supports($data)) {
                 return $normalizer;
             }
@@ -171,43 +111,15 @@ class Serializer
 
     /**
      * @param $data
+     * @param string $view
      * @param string $format
+     * @param Computed[] $computeds
      *
      * @return mixed
      */
-    public function serialize($data, string $view = "default", $format = "json")
+    public function serialize($data, string $view = "default", $format = "json", array $computeds = [])
     {
-        $context = null;
-
-        // ContextInterface classes have a static function supports
-        // which defines if the context is able to handle the given format
-        foreach ($this->contextDefinitions as $contextDefintion) {
-            try {
-                // call the static supports method
-                if (call_user_func("{$contextDefintion}::supports", $format)) {
-                    $context = new $contextDefintion();
-                }
-            } catch (\Throwable $e) {
-                throw new \InvalidArgumentException("Invalid Context Class given. {$contextDefintion}");
-            }
-        }
-
-        // sanity check
-        if (!$context || !$context instanceof ContextInterface) {
-            throw new \InvalidArgumentException("Invalid format given. {$format}");
-        }
-
-        // data type dependency
-        $context->setDataType($this->dataType);
-
-        // config for normalizers/denormalizers/...
-        $context->setConfig($this->config);
-
-        // set view based on configuration
-        $context->setView($view);
-
-        // enable transformers for the context
-        $context->setTransformers($this->normalizeTransformers);
+        $context = $this->factory->buildContext($format, $view, $computeds);
 
         if ($data) {
             // add first object to the stack
@@ -234,7 +146,7 @@ class Serializer
 
     protected function denormalize($fieldDefinition, $value)
     {
-        foreach ($this->denormalizers as $denormalizer) {
+        foreach ($this->factory->getDenormalizers() as $denormalizer) {
             if ($denormalizer->supports($fieldDefinition)) {
                 return $denormalizer->denormalize($value);
             }

@@ -3,6 +3,7 @@
 namespace DavesWeblab\RestBundle\Config;
 
 use DavesWeblab\RestBundle\Data\ViewDefinition;
+use DavesWeblab\RestBundle\Serializer\Context\RestContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Config
@@ -43,6 +44,30 @@ class Config
         return $this->getConfigIfAvailable("normalization");
     }
 
+    /**
+     * @return \Pimcore\Config\Config
+     */
+    public function getDenormalizationConfig() {
+        return $this->getConfigIfAvailable("denormalization");
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getContextConfig() {
+        return $this->config->get("context", [RestContext::class]);
+    }
+
+    /**
+     * @return array
+     */
+    public function getComputeds() {
+        return $this->config->get("computeds", []);
+    }
+
+    /**
+     * @return \Pimcore\Config\Config
+     */
     public function getDataTypeConfig()
     {
         return $this->getConfigIfAvailable("dataType");

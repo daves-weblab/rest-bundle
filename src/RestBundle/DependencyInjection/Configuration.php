@@ -23,6 +23,8 @@ class Configuration implements ConfigurationInterface
 
         $this->addDataType($rootNode);
         $this->addNormalization($rootNode);
+        $this->addDenormalization($rootNode);
+        $this->addComputeds($rootNode);
 
         $this->addObjects($rootNode);
         $this->addFieldCollections($rootNode);
@@ -65,6 +67,28 @@ class Configuration implements ConfigurationInterface
 
                         // list of context classes
                         ->arrayNode("context")
+                            ->scalarPrototype()->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
+    }
+
+    protected function addComputeds(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->variableNode("computeds")->end()
+            ->end();
+    }
+
+    protected function addDenormalization(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode("denormalization")
+                    ->children()
+                        ->arrayNode("denormalizer")
                             ->scalarPrototype()->end()
                         ->end()
                     ->end()

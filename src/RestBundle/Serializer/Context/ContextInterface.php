@@ -5,11 +5,22 @@ namespace DavesWeblab\RestBundle\Serializer\Context;
 use DavesWeblab\RestBundle\Config\Config;
 use DavesWeblab\RestBundle\Data\DataType;
 use DavesWeblab\RestBundle\Normalizer\Transformer\Transformer;
+use DavesWeblab\RestBundle\Property\Computed;
 use DavesWeblab\RestBundle\Serializer\EntityInterface;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
 interface ContextInterface
 {
+    /**
+     * @param Computed[] $computeds
+     */
+    public function setComputeds(array $computeds = []);
+
+    /**
+     * @param Computed[] $computeds
+     */
+    public function addComputeds(array $computeds = []);
+
     /**
      * @param DataType $dataType
      */
