@@ -19,10 +19,16 @@ abstract class Computed
      */
     protected $element;
 
-    public function __construct(string $name, string $supportedClass)
+    /**
+     * @var bool $isRelationType
+     */
+    protected $isRelationType;
+
+    public function __construct(string $name, string $supportedClass, bool $isRelationType = false)
     {
         $this->name = $name;
         $this->supportedClass = $supportedClass;
+        $this->isRelationType = $isRelationType;
     }
 
     /**
@@ -53,6 +59,14 @@ abstract class Computed
     }
 
     /**
+     * @return bool
+     */
+    public function isRelation()
+    {
+        return $this->isRelationType;
+    }
+
+    /**
      * @param mixed $element
      *
      * @return bool
@@ -79,4 +93,12 @@ abstract class Computed
      * @return mixed
      */
     public abstract function set($value);
+
+    /**
+     * @return null|array
+     */
+    public function getConfig()
+    {
+        return null;
+    }
 }

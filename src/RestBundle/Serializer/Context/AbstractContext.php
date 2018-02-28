@@ -4,6 +4,7 @@ namespace DavesWeblab\RestBundle\Serializer\Context;
 
 use DavesWeblab\RestBundle\Config\Config;
 use DavesWeblab\RestBundle\Data\DataType;
+use DavesWeblab\RestBundle\Normalizer\NormalizedValue;
 use DavesWeblab\RestBundle\Normalizer\Transformer\Transformer;
 use DavesWeblab\RestBundle\Property\Computed;
 use DavesWeblab\RestBundle\Serializer\EntityInterface;
@@ -65,6 +66,25 @@ abstract class AbstractContext implements ContextInterface
     public function addComputeds(array $computeds = [])
     {
         $this->computeds = array_unique(array_merge($this->computeds, $computeds));
+    }
+
+    /**
+     * @param mixed $data
+     *
+     * @return Computed\Listing
+     */
+    public function getComputeds($data)
+    {
+        $computeds = [];
+
+        foreach ($this->computeds as $computed) {
+            if ($computed->supports($data)) {
+                $computed->setElement($data);
+                $computeds[] = $computed;
+            }
+        }
+
+        return new Computed\Listing($computeds);
     }
 
     /**
@@ -157,7 +177,7 @@ abstract class AbstractContext implements ContextInterface
     /**
      * {@inheritdoc}
      */
-    public function stopsNormalization(Data $fieldDefinition = null, $data)
+    public function stopsNormalization(Data $fieldDefinition = null, $data = null)
     {
         foreach ($this->getTransformers() as $transformer) {
             if ($transformer->supports($fieldDefinition ?: $data)) {
@@ -212,5 +232,35 @@ abstract class AbstractContext implements ContextInterface
     public function pop()
     {
         return array_pop($this->stack);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildNormalizedValueFromFieldDefinition($value, Data $fieldDefinition = null, $data = null, $config = null)
+    {
+        return new NormalizedValue(
+            $value,
+            $this->transform($fieldDefinition, $value),
+            $config,
+            $this->stopsNormalization($fieldDefinition, $data),
+            $this->isRelation($fieldDefinition)
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildNormalizedValueFromComputed(Computed $computed)
+    {
+        $value = $computed->get();
+
+        return new NormalizedValue(
+            $value,
+            $this->transform(null, $value),
+            $computed->getConfig(),
+            $this->stopsNormalization(null, $value),
+            $computed->isRelation()
+        );
     }
 }

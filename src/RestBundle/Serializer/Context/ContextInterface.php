@@ -6,6 +6,7 @@ use DavesWeblab\RestBundle\Config\Config;
 use DavesWeblab\RestBundle\Data\DataType;
 use DavesWeblab\RestBundle\Normalizer\Transformer\Transformer;
 use DavesWeblab\RestBundle\Property\Computed;
+use DavesWeblab\RestBundle\Property\Computed\Listing;
 use DavesWeblab\RestBundle\Serializer\EntityInterface;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
@@ -20,6 +21,30 @@ interface ContextInterface
      * @param Computed[] $computeds
      */
     public function addComputeds(array $computeds = []);
+
+    /**
+     * @param mixed $data
+     *
+     * @return Listing
+     */
+    public function getComputeds($data);
+
+    /**
+     * @param $value
+     * @param Data $fieldDefinition
+     * @param mixed $data
+     * @param $config
+     *
+     * @return mixed
+     */
+    public function buildNormalizedValueFromFieldDefinition($value, Data $fieldDefinition, $data, $config);
+
+    /**
+     * @param Computed $computed
+     *
+     * @return mixed
+     */
+    public function buildNormalizedValueFromComputed(Computed $computed);
 
     /**
      * @param DataType $dataType
