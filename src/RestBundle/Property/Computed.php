@@ -24,7 +24,7 @@ abstract class Computed
      */
     protected $isRelationType;
 
-    public function __construct(string $name, string $supportedClass, bool $isRelationType = false)
+    public function __construct(string $name, string $supportedClass = null, bool $isRelationType = false)
     {
         $this->name = $name;
         $this->supportedClass = $supportedClass;
@@ -71,10 +71,8 @@ abstract class Computed
      *
      * @return bool
      */
-    public function supports($element = null)
+    public function supports($element)
     {
-        $element = $element ?: $this->element;
-
         return is_a($element, $this->supportedClass);
     }
 
