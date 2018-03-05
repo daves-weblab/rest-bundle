@@ -85,22 +85,23 @@ class Serializer
         if ($normalizer = $this->getNormalizer($data)) {
             $attributes = $context->getMandatoryAttributes();
             $computeds = $context->getComputeds($data);
+
             $attributes = array_merge($attributes, $normalizer->getSupportedAttributes($data, $context), $computeds->getAttributes());
 
             foreach ($attributes as $attribute) {
-                if($computeds->isComputedAttribute($attribute)) {
+                if ($computeds->isComputedAttribute($attribute)) {
                     $value = $context->buildNormalizedValueFromComputed($computeds->getByAttribute($attribute));
                 } else {
                     $value = $normalizer->getAttribute($data, $attribute, $context, $current->getConfig());
                 }
 
-                if($value->isRelation()) {
+                if ($value->isRelation()) {
                     $current->setRelation($attribute, $value->getTransformed());
                 } else {
                     $current->set($attribute, $value->getTransformed());
                 }
 
-                if(!$value->stopsNormalization()) {
+                if (!$value->stopsNormalization()) {
                     if ($this->dataType->isIterable($value->getValue())) {
                         $this->normalizeIterable($value->getValue(), $context);
                     } else if ($this->needsNormalization($value->getValue())) {

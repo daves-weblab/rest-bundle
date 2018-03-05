@@ -118,7 +118,19 @@ class Factory
         $computeds = $config->getComputeds();
 
         foreach ($computeds as $computed) {
-            $this->computeds[] = $this->buildComputed($computed);
+            $name = null;
+            $supports = null;
+            $class = null;
+
+            if (is_string($computed)) {
+                $class = $computed;
+            } else {
+                $name = @$computed["name"];
+                $supports = @$computed["supports"];
+                $class = @$computed["class"];
+            }
+
+            $this->computeds[] = $this->buildComputed($name, $supports, $class);
         }
     }
 
@@ -232,9 +244,9 @@ class Factory
      *
      * @throws \InvalidArgumentException
      */
-    public function buildComputed(string $class)
+    public function buildComputed(string $name = null, string $supports = null, string $class)
     {
-        return $this->build($class, Computed::class);
+        return $this->build($class, Computed::class, [$name, $supports]);
     }
 
     /**
@@ -247,7 +259,7 @@ class Factory
     {
         $element = new $class(...$params);
 
-        if (!is_subclass_of($element, $instanceOf)) {
+        if (!is_a($element, $instanceOf)) {
             throw new \InvalidArgumentException("Element does not match given type. {$class} is not instance of {$instanceOf}");
         }
 

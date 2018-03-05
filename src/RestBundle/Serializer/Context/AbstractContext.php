@@ -65,7 +65,7 @@ abstract class AbstractContext implements ContextInterface
      */
     public function addComputeds(array $computeds = [])
     {
-        $this->computeds = array_unique(array_merge($this->computeds, $computeds));
+        $this->computeds = array_merge($this->computeds, $computeds);
     }
 
     /**

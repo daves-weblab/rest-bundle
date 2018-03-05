@@ -75,7 +75,7 @@ abstract class Computed
     {
         $element = $element ?: $this->element;
 
-        return is_subclass_of($element, $this->supportedClass);
+        return is_a($element, $this->supportedClass);
     }
 
     /**
