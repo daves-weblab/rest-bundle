@@ -23,7 +23,8 @@ the process of transforming a data object into a given API Standard like JsonAPI
 ## Working with the Rest Bundle
 - [Architecture Overview](./doc/01_Architecture-Overview.md)
 - [Installation](./doc/02_Installation.md) and [Configuration](./doc/03_Configuration.md)
-- [Computed Properties](./doc/04_Computed-Properties.md)
-- [API Filters](./doc/05_API-Filters.md)
-- [Custom Normalizer / Denormalizer](./doc/06_Custom-Normalizer-Denormalizer.md)
-- [Build a custom format](./doc/07_Build-a-custom-Format.md)
+- [Create a REST-API for a data object](./doc/04_Create-Rest-API-for-a-Data-Object.md)
+- [Computed Properties](./doc/05_Computed-Properties.md)
+- [API Filters](./doc/06_API-Filters.md)
+- [Custom Normalizer / Denormalizer](./doc/07_Custom-Normalizer-Denormalizer.md)
+- [Build a custom format](./doc/08_Build-a-custom-Format.md)

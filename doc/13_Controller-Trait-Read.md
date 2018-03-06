@@ -1,0 +1,3 @@
+# Controller Trait Read
+
+// todo
