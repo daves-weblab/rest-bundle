@@ -6,18 +6,26 @@ use Carbon\Carbon;
 use DavesWeblab\RestBundle\Serializer\Context\ContextInterface;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-class DateTransformer implements Transformer
+class DateTransformer extends AbstractTransformer
 {
     /**
      * {@inheritdoc}
      */
-    public function supports($data)
+    public function supports($data, array $config = [], bool $supportOnly = false)
     {
         if ($data instanceof Data) {
             return in_array($data->getFieldtype(), ["date", "datetime"]);
         }
 
         return $data instanceof Carbon;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isEmbed($data, array $config = [])
+    {
+        return true;
     }
 
     /**

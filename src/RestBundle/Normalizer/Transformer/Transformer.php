@@ -9,10 +9,20 @@ interface Transformer
 {
     /**
      * @param Data|mixed $data
+     * @param array $config
+     * @param bool $supportOnly
      *
      * @return bool
      */
-    public function supports($data);
+    public function supports($data, array $config = [], bool $supportOnly = false);
+
+    /**
+     * @param $data
+     * @param array $config
+     *
+     * @return mixed
+     */
+    public function isEmbed($data, array $config = []);
 
     /**
      * @return bool

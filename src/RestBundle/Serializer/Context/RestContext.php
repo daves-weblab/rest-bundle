@@ -2,6 +2,8 @@
 
 namespace DavesWeblab\RestBundle\Serializer\Context;
 
+use DavesWeblab\RestBundle\Serializer\Context\Embedded\EmbeddedIterableRestContext;
+use DavesWeblab\RestBundle\Serializer\Context\Embedded\EmbeddedRestContext;
 use DavesWeblab\RestBundle\Serializer\Json\JsonEntity;
 use DavesWeblab\RestBundle\Serializer\Json\Namespaces\JsonNamespace;
 use DavesWeblab\RestBundle\Serializer\Json\Namespaces\NoNamespaceAvailableException;
@@ -53,7 +55,7 @@ class RestContext extends AbstractContext
      *
      * @throws NoNamespaceAvailableException
      */
-    protected function getNamespace($data)
+    public function getNamespace($data)
     {
         foreach ($this->namespaces as $namespace) {
             if ($namespace->supports($data)) {
@@ -150,5 +152,13 @@ class RestContext extends AbstractContext
     public function getMandatoryAttributes()
     {
         return ["id"];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildEmbeddedContext($data)
+    {
+        return new EmbeddedRestContext();
     }
 }

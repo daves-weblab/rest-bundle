@@ -106,6 +106,7 @@ class Configuration implements ConfigurationInterface
     {
         $node
             ->children()
+                ->booleanNode("embedRelations")->defaultFalse()->end()
                 ->variableNode("objects")->end()
             ->end();
     }
@@ -114,6 +115,7 @@ class Configuration implements ConfigurationInterface
     {
         $node
             ->children()
+                ->booleanNode("embedFieldcollections")->defaultFalse()->end()
                 ->variableNode("fieldCollections")->end()
             ->end();
     }

@@ -4,16 +4,21 @@ namespace DavesWeblab\RestBundle\Data;
 
 class ViewDefinition
 {
+    private $empty;
+
     private $supportedAttributes = [];
     private $mappedAttributes = [];
     private $attributeConfigs = [];
 
-    public static function emptyViewDefinition() {
+    public static function emptyViewDefinition()
+    {
         return new ViewDefinition([]);
     }
 
     public function __construct($config)
     {
+        $this->empty = empty($config);
+
         foreach ($config as $key => $value) {
             list($attribute, $attributeConfig) = is_numeric($key) ? [$value, $value] : [$key, $value];
 
@@ -60,7 +65,7 @@ class ViewDefinition
     /**
      * @param $attribute
      *
-     * @return array|null
+     * @return array
      */
     public function getAttributeConfig($attribute)
     {
@@ -68,7 +73,7 @@ class ViewDefinition
             return $this->attributeConfigs[$attribute];
         }
 
-        return null;
+        return [];
     }
 
     /**
@@ -89,5 +94,10 @@ class ViewDefinition
     public function getMappedAttribute(string $attribute)
     {
         return $this->mappedAttributes[$attribute];
+    }
+
+    public function isEmpty()
+    {
+        return $this->empty;
     }
 }

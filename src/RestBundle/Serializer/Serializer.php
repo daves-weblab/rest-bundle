@@ -95,10 +95,19 @@ class Serializer
                     $value = $normalizer->getAttribute($data, $attribute, $context, $current->getConfig());
                 }
 
-                if ($value->isRelation()) {
-                    $current->setRelation($attribute, $value->getTransformed());
+                if ($value->isEmbedded()) {
+                    $embeddedContext = $context->buildEmbeddedContext($data);
+                    $embeddedContext->setParent($context);
+
+                    $current->set($attribute, $embeddedContext);
+
+                    $context = $embeddedContext;
                 } else {
-                    $current->set($attribute, $value->getTransformed());
+                    if ($value->isRelation()) {
+                        $current->setRelation($attribute, $value->getTransformed());
+                    } else {
+                        $current->set($attribute, $value->getTransformed());
+                    }
                 }
 
                 if (!$value->stopsNormalization()) {

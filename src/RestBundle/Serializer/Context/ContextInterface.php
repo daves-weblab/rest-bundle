@@ -7,6 +7,7 @@ use DavesWeblab\RestBundle\Data\DataType;
 use DavesWeblab\RestBundle\Normalizer\Transformer\Transformer;
 use DavesWeblab\RestBundle\Property\Computed;
 use DavesWeblab\RestBundle\Property\Computed\Listing;
+use DavesWeblab\RestBundle\Serializer\Context\Embedded\EmbeddedContextInterface;
 use DavesWeblab\RestBundle\Serializer\EntityInterface;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
@@ -33,11 +34,11 @@ interface ContextInterface
      * @param $value
      * @param Data $fieldDefinition
      * @param mixed $data
-     * @param $config
+     * @param array $config
      *
      * @return mixed
      */
-    public function buildNormalizedValueFromFieldDefinition($value, Data $fieldDefinition, $data, $config);
+    public function buildNormalizedValueFromFieldDefinition($value, Data $fieldDefinition = null, $data = null, array $config = []);
 
     /**
      * @param Computed $computed
@@ -102,7 +103,7 @@ interface ContextInterface
      *
      * @return mixed
      */
-    public function transform(Data $fieldDefinition = null, $data, array $config = null);
+    public function transform(Data $fieldDefinition = null, $data, array $config = []);
 
     /**
      * @param Data|null $fieldDefinition
@@ -110,7 +111,7 @@ interface ContextInterface
      *
      * @return bool
      */
-    public function stopsNormalization(Data $fieldDefinition = null, $data);
+    public function stopsNormalization(Data $fieldDefinition = null, $data = null, array $config = []);
 
     /**
      * @return bool
@@ -126,6 +127,23 @@ interface ContextInterface
      * @return EntityInterface|null
      */
     public function pop();
+
+    /**
+     * @param $data
+     *
+     * @return bool
+     */
+    public function hasObject($object);
+
+    /**
+     * @param $data
+     */
+    public function trackObject($object);
+
+    /**
+     * @param EntityInterface $entity
+     */
+    public function push(EntityInterface $entity);
 
     /**
      * @return mixed
@@ -144,4 +162,11 @@ interface ContextInterface
      * @return array
      */
     public function getMandatoryAttributes();
+
+    /**
+     * @param $data
+     *
+     * @return EmbeddedContextInterface
+     */
+    public function buildEmbeddedContext($data);
 }

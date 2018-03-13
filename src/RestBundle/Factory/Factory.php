@@ -222,7 +222,7 @@ class Factory
      */
     public function buildNormalizerTransformer(string $class)
     {
-        return $this->build($class, Transformer::class);
+        return $this->build($class, Transformer::class, [$this->config, $this->dataType]);
     }
 
     /**

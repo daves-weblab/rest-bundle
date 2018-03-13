@@ -26,7 +26,7 @@ class ObjectNormalizer implements NormalizerInterface
         $viewDefinition = $context->getConfig()->getViewDefinitionForObject($data->getClassName());
         $attributes = [];
 
-        if ($viewDefinition) {
+        if (!$viewDefinition->isEmpty()) {
             return $viewDefinition->getSupportedAttributes();
         }
 
@@ -66,7 +66,7 @@ class ObjectNormalizer implements NormalizerInterface
             $value,
             $fieldDefinition,
             $data,
-            $viewConfig->getMappedAttribute($attribute)
+            $viewConfig->getAttributeConfig($attribute)
         );
     }
 }

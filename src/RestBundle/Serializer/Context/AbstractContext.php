@@ -45,7 +45,7 @@ abstract class AbstractContext implements ContextInterface
     /**
      * @var DataType $dataType
      */
-    private $dataType;
+    protected $dataType;
 
     /**
      * @var Computed[] $computeds
@@ -158,10 +158,10 @@ abstract class AbstractContext implements ContextInterface
     /**
      * {@inheritdoc}
      */
-    public function transform(Data $fieldDefinition = null, $data, array $config = null)
+    public function transform(Data $fieldDefinition = null, $data, array $config = [])
     {
         foreach ($this->getTransformers() as $transformer) {
-            if ($transformer->supports($fieldDefinition ?: $data)) {
+            if ($transformer->supports($fieldDefinition ?: $data, $config)) {
                 try {
                     $transformed = $transformer->transform($data, $this, $config);
                     return $transformed;
@@ -177,11 +177,28 @@ abstract class AbstractContext implements ContextInterface
     /**
      * {@inheritdoc}
      */
-    public function stopsNormalization(Data $fieldDefinition = null, $data = null)
+    public function stopsNormalization(Data $fieldDefinition = null, $data = null, array $config = [])
     {
         foreach ($this->getTransformers() as $transformer) {
-            if ($transformer->supports($fieldDefinition ?: $data)) {
+            if ($transformer->supports($fieldDefinition ?: $data, $config)) {
                 return $transformer->stopsNormalization();
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isEmbed(Data $fieldDefinition = null, $data = null, array $config = [])
+    {
+        /**
+         * @var Transformer $transformer
+         */
+        foreach ($this->getTransformers() as $transformer) {
+            if ($transformer->supports($fieldDefinition ?: $data, $config, true) && $transformer->isEmbed($fieldDefinition ?: $data, $config)) {
+                return true;
             }
         }
 
@@ -197,11 +214,9 @@ abstract class AbstractContext implements ContextInterface
     }
 
     /**
-     * @param $object
-     *
-     * @return bool
+     * {@inheritdoc}
      */
-    protected function hasObject($object)
+    public function hasObject($object)
     {
         $hash = spl_object_hash($object);
 
@@ -209,9 +224,9 @@ abstract class AbstractContext implements ContextInterface
     }
 
     /**
-     * @param $object
+     * {@inheritdoc}
      */
-    protected function trackObject($object)
+    public function trackObject($object)
     {
         $hash = spl_object_hash($object);
 
@@ -219,9 +234,9 @@ abstract class AbstractContext implements ContextInterface
     }
 
     /**
-     * @param EntityInterface $entity
+     * {@inheritdoc}
      */
-    protected function push(EntityInterface $entity)
+    public function push(EntityInterface $entity)
     {
         $this->stack[] = $entity;
     }
@@ -237,14 +252,15 @@ abstract class AbstractContext implements ContextInterface
     /**
      * {@inheritdoc}
      */
-    public function buildNormalizedValueFromFieldDefinition($value, Data $fieldDefinition = null, $data = null, $config = null)
+    public function buildNormalizedValueFromFieldDefinition($value, Data $fieldDefinition = null, $data = null, array $config = [])
     {
         return new NormalizedValue(
             $value,
-            $this->transform($fieldDefinition, $value),
+            $this->transform($fieldDefinition, $value, $config),
             $config,
-            $this->stopsNormalization($fieldDefinition, $data),
-            $this->isRelation($fieldDefinition)
+            $this->stopsNormalization($fieldDefinition, $data, $config),
+            $this->isRelation($fieldDefinition),
+            $this->isEmbed($fieldDefinition, $data, $config)
         );
     }
 

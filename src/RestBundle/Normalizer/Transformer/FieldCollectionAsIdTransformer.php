@@ -2,32 +2,32 @@
 
 namespace DavesWeblab\RestBundle\Normalizer\Transformer;
 
-use DavesWeblab\RestBundle\Data\DataType;
 use DavesWeblab\RestBundle\Serializer\Context\ContextInterface;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Fieldcollection;
 
-class FieldCollectionAsIdTransformer implements Transformer
+class FieldCollectionAsIdTransformer extends AbstractTransformer
 {
     /**
-     * @var DataType $dataType
+     * {@inheritdoc}
      */
-    private $dataType;
-
-    public function __construct()
+    public function supports($data, array $config = [], bool $supportOnly = false)
     {
-        $this->dataType = $dataType = \Pimcore::getContainer()->get("dwl.rest.data");
+        if($this->isEmbed($data, $config) && !$supportOnly) {
+            return false;
+        }
+
+        return $data instanceof Data\Fieldcollections;
     }
 
     /**
-     * @param Data|mixed $data
-     *
-     * @return bool
+     * {@inheritdoc}
      */
-    public function supports($data)
+    public function isEmbed($data, array $config = [])
     {
-        return $data instanceof Data\Fieldcollections;
+        return @$config["embed"] || $this->getConfig()->embedFieldcollections();
     }
+
 
     /**
      * {@inheritdoc}

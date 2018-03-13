@@ -2,6 +2,7 @@
 
 namespace DavesWeblab\RestBundle\Serializer\Context;
 
+use DavesWeblab\RestBundle\Serializer\Context\Embedded\EmbeddedJsonApiContext;
 use DavesWeblab\RestBundle\Serializer\Json\JsonApiEntity;
 use ICanBoogie\Inflector;
 
@@ -10,7 +11,7 @@ class JsonApiContext extends RestContext
     /**
      * {@inheritdoc}
      */
-    protected function getNamespace($data)
+    public function getNamespace($data)
     {
         $namespace = parent::getNamespace($data);
 
@@ -52,7 +53,7 @@ class JsonApiContext extends RestContext
         } else if ($root) {
             $entity->set("type", $namespace);
 
-            if(!array_key_exists($attribute, $this->json)) {
+            if (!array_key_exists($attribute, $this->json)) {
                 $this->json[$attribute] = $entity;
             } else {
                 $this->json[$attribute][] = $entity;
@@ -70,5 +71,13 @@ class JsonApiContext extends RestContext
         $this->push($entity);
 
         return $entity;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildEmbeddedContext($data)
+    {
+        return new EmbeddedJsonApiContext();
     }
 }

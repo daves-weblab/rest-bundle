@@ -30,7 +30,7 @@ class FieldCollectionNormalizer implements NormalizerInterface
     {
         $viewDefinition = $context->getConfig()->getViewDefinitionForFieldCollection($data->getType());
 
-        if (!empty($viewDefinition->getSupportedAttributes())) {
+        if (!$viewDefinition->isEmpty()) {
             return $viewDefinition->getSupportedAttributes();
         }
 
@@ -87,6 +87,11 @@ class FieldCollectionNormalizer implements NormalizerInterface
 
         $value = $data->$getter();
 
-        return new NormalizedValue($value, $context->transform($fieldDefinition, $value), $viewConfig->getAttributeConfig($attribute), $context->stopsNormalization($fieldDefinition, $value), $context->isRelation($fieldDefinition));
+        return $context->buildNormalizedValueFromFieldDefinition(
+            $value,
+            $fieldDefinition,
+            $data,
+            $viewConfig->getAttributeConfig($attribute)
+        );
     }
 }

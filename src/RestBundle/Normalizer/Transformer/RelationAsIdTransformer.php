@@ -2,35 +2,34 @@
 
 namespace DavesWeblab\RestBundle\Normalizer\Transformer;
 
-use DavesWeblab\RestBundle\Data\DataType;
 use DavesWeblab\RestBundle\Serializer\Context\ContextInterface;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\Element\ElementInterface;
 
-class RelationAsIdTransformer implements Transformer
+class RelationAsIdTransformer extends AbstractTransformer
 {
     /**
-     * @var DataType $dataType
+     * {@inheritdoc}
      */
-    private $dataType;
-
-    public function __construct()
+    public function supports($data, array $config = [], bool $supportOnly = false)
     {
-        $this->dataType = $dataType = \Pimcore::getContainer()->get("dwl.rest.data");
-    }
+        if ($this->isEmbed($data, $config) && !$supportOnly) {
+            return false;
+        }
 
-    /**
-     * @param Data|mixed $data
-     *
-     * @return bool
-     */
-    public function supports($data)
-    {
         if ($data instanceof Data) {
-            return $this->dataType->isRelationType($data);
+            return $this->getDataType()->isRelationType($data);
         }
 
         return $data instanceof ElementInterface;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isEmbed($data, array $config = [])
+    {
+        return @$config["embed"] || $this->getConfig()->embedRelations();
     }
 
     /**
@@ -50,7 +49,7 @@ class RelationAsIdTransformer implements Transformer
      */
     public function transform($data, ContextInterface $context, array $config = null)
     {
-        if ($this->dataType->isIterable($data)) {
+        if ($this->getDataType()->isIterable($data)) {
             $ids = [];
 
             /**
@@ -63,7 +62,7 @@ class RelationAsIdTransformer implements Transformer
             return $ids;
         }
 
-        if($data instanceof ElementInterface) {
+        if ($data instanceof ElementInterface) {
             return $context->buildRelationData($data->getId(), $data);
         }
 

@@ -186,4 +186,20 @@ class Config
         $this->viewDefinitionCache["assets"] = $viewDefinition;
         return $viewDefinition;
     }
+
+    /**
+     * @return bool
+     */
+    public function embedRelations()
+    {
+        return $this->config->get("embedRelations", false);
+    }
+
+    /**
+     * @return bool
+     */
+    public function embedFieldcollections()
+    {
+        return $this->config->get("embedFieldcollections", false);
+    }
 }

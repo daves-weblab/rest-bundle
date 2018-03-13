@@ -9,14 +9,16 @@ class NormalizedValue
     private $config;
     private $stopNormalization;
     private $isRelationType;
+    private $embed;
 
-    public function __construct($value, $transformed, $config = null, $stopNormalization = false, $isRelation = false)
+    public function __construct($value, $transformed, $config = null, $stopNormalization = false, $isRelation = false, $isEmbed = false)
     {
         $this->value = $value;
         $this->transformed = $transformed;
         $this->config = $config;
         $this->stopNormalization = $stopNormalization;
         $this->isRelationType = $isRelation;
+        $this->embed = $isEmbed;
     }
 
     /**
@@ -46,7 +48,8 @@ class NormalizedValue
     /**
      * @return bool
      */
-    public function stopsNormalization() {
+    public function stopsNormalization()
+    {
         return $this->stopNormalization;
     }
 
@@ -56,5 +59,10 @@ class NormalizedValue
     public function isRelation(): bool
     {
         return $this->isRelationType;
+    }
+
+    public function isEmbedded(): bool
+    {
+        return $this->embed;
     }
 }
