@@ -11,17 +11,14 @@ class EmbeddedRestContext extends AbstractEmbeddedContext implements \JsonSerial
     /**
      * {@inheritdoc}
      */
-    public function add($data, array $config = null)
+    public function add($data, array $config = null, bool $isEmbedded = false)
     {
-        // ignore cyclic dependencies
-        // maybe this should be changed if necessary
-//        if ($this->hasObject($data)) {
-//            return;
-//        }
-//
-//        $this->trackObject($data);
+        if (!$isEmbedded) {
+            return $this->getRootContext()->add($data, $config, false);
+        }
 
         $entity = new JsonEntity($data);
+        $entity->setConfig($config);
 
         if ($this->json === null) {
             $this->json = $entity;
@@ -33,7 +30,6 @@ class EmbeddedRestContext extends AbstractEmbeddedContext implements \JsonSerial
             $this->json[] = $entity;
         }
 
-        $entity->setConfig($config);
         $this->push($entity);
 
         return $entity;

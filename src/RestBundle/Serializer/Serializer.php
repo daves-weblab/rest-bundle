@@ -61,10 +61,10 @@ class Serializer
      *
      * @param ContextInterface $context
      */
-    protected function normalizeIterable($data, ContextInterface $context)
+    protected function normalizeIterable($data, ContextInterface $context, bool $isEmbedded = false)
     {
         foreach ($data as $item) {
-            $context->add($item);
+            $context->add($item, null, $isEmbedded);
             $this->normalize($context);
         }
     }
@@ -74,6 +74,7 @@ class Serializer
      */
     protected function normalize(ContextInterface $context)
     {
+        $originalContext = $context;
         $current = $context->pop();
 
         if (!$current) {
@@ -87,6 +88,7 @@ class Serializer
             $computeds = $context->getComputeds($data);
 
             $attributes = array_merge($attributes, $normalizer->getSupportedAttributes($data, $context), $computeds->getAttributes());
+            $attributes = $normalizer->removeUnsupportedAttributes($attributes);
 
             foreach ($attributes as $attribute) {
                 if ($computeds->isComputedAttribute($attribute)) {
@@ -112,15 +114,20 @@ class Serializer
 
                 if (!$value->stopsNormalization()) {
                     if ($this->dataType->isIterable($value->getValue())) {
-                        $this->normalizeIterable($value->getValue(), $context);
+                        $this->normalizeIterable($value->getValue(), $context, $value->isEmbedded());
                     } else if ($this->needsNormalization($value->getValue())) {
-                        $context->add($value->getValue(), $value->getConfig());
+                        $context->add($value->getValue(), $value->getConfig(), $value->isEmbedded());
                         $this->normalize($context);
                     }
                 }
             }
         } else if ($this->dataType->isIterable($data)) {
             $this->normalizeIterable($data, $context);
+        }
+
+        // operate on stack
+            if (!$originalContext->isEmpty()) {
+            $this->normalize($originalContext);
         }
     }
 

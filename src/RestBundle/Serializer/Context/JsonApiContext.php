@@ -21,7 +21,7 @@ class JsonApiContext extends RestContext
     /**
      * {@inheritdoc}
      */
-    public function add($data, array $config = null)
+    public function add($data, array $config = null, bool $isEmbedded = false)
     {
         if ($this->hasObject($data)) {
             return;
@@ -56,6 +56,14 @@ class JsonApiContext extends RestContext
             if (!array_key_exists($attribute, $this->json)) {
                 $this->json[$attribute] = $entity;
             } else {
+                if(!is_array($this->json[$attribute])) {
+                    if(empty($this->json[$attribute])) {
+                        $this->json[$attribute] = [];
+                    } else {
+                        $this->json[$attribute] = [$this->json[$attribute]];
+                    }
+                }
+
                 $this->json[$attribute][] = $entity;
             }
         } else {

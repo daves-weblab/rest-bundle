@@ -2,35 +2,49 @@
 
 namespace DavesWeblab\RestBundle\Normalizer;
 
+use DavesWeblab\RestBundle\Normalizer\Transformer\ObjectBrickAsIdTransformer;
 use DavesWeblab\RestBundle\Serializer\Context\ContextInterface;
-use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\DataObject\ClassDefinition\Data;
+use Pimcore\Model\DataObject\Objectbrick\Data\AbstractData;
+use Pimcore\Model\DataObject\Objectbrick\Definition;
 
-class ObjectNormalizer implements NormalizerInterface
+class ObjectbrickNormalizer implements NormalizerInterface
 {
     /**
-     * {@inheritdoc}
+     * @param mixed $data
+     *
+     * @return bool
      */
     public function supports($data)
     {
-        return $data instanceof Concrete;
+        return $data instanceof AbstractData;
     }
 
     /**
-     * @param Concrete $data
+     * @param AbstractData $data
      * @param ContextInterface $context
      *
      * @return string[]
      */
     public function getSupportedAttributes($data, ContextInterface $context)
     {
-        $viewDefinition = $context->getConfig()->getViewDefinitionForObject($data->getClassName());
-        $attributes = [];
+        $viewDefinition = $context->getConfig()->getViewDefinitionForObjectbrick($data->getType());
 
         if (!$viewDefinition->isEmpty()) {
             return $viewDefinition->getSupportedAttributes();
         }
 
-        foreach ($data->getClass()->getFieldDefinitions() as $fieldDefinition) {
+        $attributes = [];
+
+        /**
+         * @var Definition $definition
+         */
+        $definition = $data->getDefinition();
+
+        /**
+         * @var Data $fieldDefinition
+         */
+        foreach ($definition->getFieldDefinitions() as $fieldDefinition) {
             $attributes[] = $fieldDefinition->getName();
         }
 
@@ -47,7 +61,7 @@ class ObjectNormalizer implements NormalizerInterface
     }
 
     /**
-     * @param Concrete $data
+     * @param AbstractData $data
      * @param string $attribute
      * @param ContextInterface $context
      *
@@ -56,13 +70,24 @@ class ObjectNormalizer implements NormalizerInterface
      */
     public function getAttribute($data, string $attribute, ContextInterface $context, array $config = null)
     {
-        $viewConfig = $context->getConfig()->getViewDefinitionForObject($data->getClassName());
+        if ($attribute == "id") {
+            $id = ObjectBrickAsIdTransformer::transformObjectbrickId($data);
+
+            return new NormalizedValue($id, $id);
+        }
+
+        $viewConfig = $context->getConfig()->getViewDefinitionForFieldCollection($data->getType());
 
         if ($viewConfig->isMappedAttribute($attribute)) {
             $attribute = $viewConfig->getMappedAttribute($attribute);
         }
 
-        $fieldDefinition = $data->getClass()->getFieldDefinition($attribute) ?: null;
+        /**
+         * @var Definition $definition
+         */
+        $definition = $data->getDefinition();
+        $fieldDefinition = $definition->getFieldDefinition($attribute) ?: null;
+
         $getter = "get" . ucfirst($attribute);
 
         if (!method_exists($data, $getter)) {

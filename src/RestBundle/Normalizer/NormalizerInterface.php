@@ -22,6 +22,13 @@ interface NormalizerInterface
     public function getSupportedAttributes($data, ContextInterface $context);
 
     /**
+     * @param string[] $attributes
+     *
+     * @return string[]
+     */
+    public function removeUnsupportedAttributes(array $attributes);
+
+    /**
      * @param mixed $data
      * @param string $attribute
      * @param ContextInterface $context

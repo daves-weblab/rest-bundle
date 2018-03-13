@@ -252,6 +252,14 @@ abstract class AbstractContext implements ContextInterface
     /**
      * {@inheritdoc}
      */
+    public function isEmpty()
+    {
+        return empty($this->stack);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function buildNormalizedValueFromFieldDefinition($value, Data $fieldDefinition = null, $data = null, array $config = [])
     {
         return new NormalizedValue(
@@ -260,7 +268,7 @@ abstract class AbstractContext implements ContextInterface
             $config,
             $this->stopsNormalization($fieldDefinition, $data, $config),
             $this->isRelation($fieldDefinition),
-            $this->isEmbed($fieldDefinition, $data, $config)
+            $this->isEmbed($fieldDefinition, $data, $config) ?: @$config["embed"]
         );
     }
 

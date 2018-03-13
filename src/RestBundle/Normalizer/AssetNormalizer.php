@@ -36,6 +36,15 @@ class AssetNormalizer implements NormalizerInterface
     }
 
     /**
+     * @param array $attributes
+     * @return array|string[]
+     */
+    public function removeUnsupportedAttributes(array $attributes)
+    {
+        return $attributes;
+    }
+
+    /**
      * @param Asset $data
      * @param array $config
      *

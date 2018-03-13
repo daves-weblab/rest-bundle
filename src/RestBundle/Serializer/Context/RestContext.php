@@ -9,6 +9,7 @@ use DavesWeblab\RestBundle\Serializer\Json\Namespaces\JsonNamespace;
 use DavesWeblab\RestBundle\Serializer\Json\Namespaces\NoNamespaceAvailableException;
 use DavesWeblab\RestBundle\Serializer\Json\Namespaces\Rest\AssetNamespace;
 use DavesWeblab\RestBundle\Serializer\Json\Namespaces\Rest\FieldCollectionNamespace;
+use DavesWeblab\RestBundle\Serializer\Json\Namespaces\Rest\ObjectbrickNamespace;
 use DavesWeblab\RestBundle\Serializer\Json\Namespaces\Rest\ObjectListingNamespace;
 use DavesWeblab\RestBundle\Serializer\Json\Namespaces\Rest\ObjectNamespace;
 use ICanBoogie\Inflector;
@@ -36,7 +37,8 @@ class RestContext extends AbstractContext
             new ObjectNamespace(),
             new ObjectListingNamespace(),
             new AssetNamespace(),
-            new FieldCollectionNamespace()
+            new FieldCollectionNamespace(),
+            new ObjectbrickNamespace()
         ];
     }
 
@@ -69,7 +71,7 @@ class RestContext extends AbstractContext
     /**
      * {@inheritdoc}
      */
-    public function add($data, array $config = null)
+    public function add($data, array $config = null, bool $isEmbedded = false)
     {
         // ignore circular dependencies and duplicates
         if ($this->hasObject($data)) {

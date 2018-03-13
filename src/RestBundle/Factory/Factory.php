@@ -11,10 +11,14 @@ use DavesWeblab\RestBundle\Denormalizer\ImageDenormalizer;
 use DavesWeblab\RestBundle\Normalizer\AssetNormalizer;
 use DavesWeblab\RestBundle\Normalizer\FieldCollectionNormalizer;
 use DavesWeblab\RestBundle\Normalizer\NormalizerInterface;
+use DavesWeblab\RestBundle\Normalizer\ObjectbrickFieldNormalizer;
+use DavesWeblab\RestBundle\Normalizer\ObjectbrickNormalizer;
 use DavesWeblab\RestBundle\Normalizer\ObjectNormalizer;
 use DavesWeblab\RestBundle\Normalizer\Transformer\DateTransformer;
 use DavesWeblab\RestBundle\Normalizer\Transformer\FieldCollectionAsIdTransformer;
 use DavesWeblab\RestBundle\Normalizer\Transformer\MultiselectTransformer;
+use DavesWeblab\RestBundle\Normalizer\Transformer\ObjectBrickAsIdTransformer;
+use DavesWeblab\RestBundle\Normalizer\Transformer\ObjectbrickTransformer;
 use DavesWeblab\RestBundle\Normalizer\Transformer\RelationAsIdTransformer;
 use DavesWeblab\RestBundle\Normalizer\Transformer\Transformer;
 use DavesWeblab\RestBundle\Property\Computed;
@@ -71,6 +75,8 @@ class Factory
         $normalizers = array_merge([
             ObjectNormalizer::class,
             FieldCollectionNormalizer::class,
+            ObjectbrickFieldNormalizer::class,
+            ObjectbrickNormalizer::class,
             AssetNormalizer::class
         ], $normalization->get("normalizer", []));
 
@@ -82,10 +88,12 @@ class Factory
          * build normalizer transformers
          */
         $normalizeTransformers = array_merge([
-            RelationAsIdTransformer::class,
             FieldCollectionAsIdTransformer::class,
+            ObjectbrickTransformer::class,
+            ObjectBrickAsIdTransformer::class,
             DateTransformer::class,
-            MultiselectTransformer::class
+            MultiselectTransformer::class,
+            RelationAsIdTransformer::class
         ], $normalization->get("transformer", []));
 
         foreach ($normalizeTransformers as $transformer) {

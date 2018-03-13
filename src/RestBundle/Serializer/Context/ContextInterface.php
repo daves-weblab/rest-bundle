@@ -121,12 +121,17 @@ interface ContextInterface
     /**
      * @param mixed $data
      */
-    public function add($data, array $config = null);
+    public function add($data, array $config = null, bool $isEmbedded = false);
 
     /**
      * @return EntityInterface|null
      */
     public function pop();
+
+    /**
+     * @return bool
+     */
+    public function isEmpty();
 
     /**
      * @param $data

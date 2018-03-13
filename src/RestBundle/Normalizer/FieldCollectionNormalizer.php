@@ -52,6 +52,15 @@ class FieldCollectionNormalizer implements NormalizerInterface
     }
 
     /**
+     * @param array $attributes
+     * @return array|string[]
+     */
+    public function removeUnsupportedAttributes(array $attributes)
+    {
+        return $attributes;
+    }
+
+    /**
      * @param AbstractData $data
      * @param string $attribute
      * @param ContextInterface $context

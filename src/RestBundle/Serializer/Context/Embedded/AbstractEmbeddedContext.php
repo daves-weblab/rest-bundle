@@ -9,7 +9,7 @@ use DavesWeblab\RestBundle\Serializer\Context\AbstractContext;
 use DavesWeblab\RestBundle\Serializer\Context\ContextInterface;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 
-abstract class AbstractEmbeddedContext extends AbstractContext
+abstract class AbstractEmbeddedContext extends AbstractContext implements EmbeddedContextInterface
 {
     /**
      * @var ContextInterface $parent

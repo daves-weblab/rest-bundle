@@ -28,8 +28,8 @@ class Configuration implements ConfigurationInterface
         $this->addComputeds($rootNode);
 
         $this->addObjects($rootNode);
-        $this->addFieldCollections($rootNode);
-        // todo $this->addObjectBricks($rootNode);
+        $this->addFieldcollections($rootNode);
+        $this->addObjectbricks($rootNode);
         $this->addAssets($rootNode);
         // todo $this->addDocuments($rootNode);
 
@@ -111,12 +111,21 @@ class Configuration implements ConfigurationInterface
             ->end();
     }
 
-    protected function addFieldCollections(ArrayNodeDefinition $node)
+    protected function addFieldcollections(ArrayNodeDefinition $node)
     {
         $node
             ->children()
-                ->booleanNode("embedFieldcollections")->defaultFalse()->end()
-                ->variableNode("fieldCollections")->end()
+            ->booleanNode("embedFieldcollections")->defaultFalse()->end()
+            ->variableNode("fieldcollections")->end()
+            ->end();
+    }
+
+    protected function addObjectbricks(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+            ->booleanNode("embedObjectbricks")->defaultFalse()->end()
+            ->variableNode("objectbricks")->end()
             ->end();
     }
 

@@ -154,7 +154,18 @@ class Config
      */
     public function getViewDefinitionForFieldCollection(string $name, string $view = "default")
     {
-        return $this->getViewDefinition("fieldCollections", $name, $view);
+        return $this->getViewDefinition("fieldcollections", $name, $view);
+    }
+
+    /**
+     * @param string $name
+     * @param string $view
+     *
+     * @return ViewDefinition|null
+     */
+    public function getViewDefinitionForObjectbrick(string $name, string $view = "default")
+    {
+        return $this->getViewDefinition("objectbrick", $name, $view);
     }
 
     /**

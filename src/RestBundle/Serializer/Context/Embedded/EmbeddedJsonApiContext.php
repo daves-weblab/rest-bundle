@@ -3,6 +3,7 @@
 namespace DavesWeblab\RestBundle\Serializer\Context\Embedded;
 
 use DavesWeblab\RestBundle\Serializer\Context\JsonApiContext;
+use DavesWeblab\RestBundle\Serializer\Json\Namespaces\NoNamespaceAvailableException;
 
 class EmbeddedJsonApiContext extends EmbeddedRestContext
 {
@@ -11,23 +12,20 @@ class EmbeddedJsonApiContext extends EmbeddedRestContext
     /**
      * {@inheritdoc}
      */
-    public function add($data, array $config = null)
+    public function add($data, array $config = null, bool $isEmbedded = false)
     {
-        // ignore cyclic dependencies
-        // maybe this should be changed if necessary
-//        if ($this->hasObject($data)) {
-//            return;
-//        }
-//
-//        $this->trackObject($data);
-        $entity = parent::add($data, $config);
+        $entity = parent::add($data, $config, $isEmbedded);
 
         /**
          * @var JsonApiContext $rootContext
          */
         $rootContext = $this->getRootContext();
 
-        $entity->set("type", $rootContext->getNamespace($data));
+        try {
+            $entity->set("type", $rootContext->getNamespace($data));
+        } catch(NoNamespaceAvailableException $e) {
+            // no namespace available, do not set type
+        }
 
         return $entity;
     }

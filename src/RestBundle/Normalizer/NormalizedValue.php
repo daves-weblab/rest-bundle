@@ -18,7 +18,7 @@ class NormalizedValue
         $this->config = $config;
         $this->stopNormalization = $stopNormalization;
         $this->isRelationType = $isRelation;
-        $this->embed = $isEmbed;
+        $this->embed = (bool) $isEmbed;
     }
 
     /**

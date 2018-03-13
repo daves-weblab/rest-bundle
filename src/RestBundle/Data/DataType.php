@@ -24,8 +24,7 @@ class DataType
             "hotspotimage",
             "video",
             "user",
-            "fieldcollections",
-            "objectbricks"
+            "fieldcollections"
         ], $dataType->get("relationTypes", []));
     }
 
