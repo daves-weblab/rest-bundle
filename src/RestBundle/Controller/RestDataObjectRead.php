@@ -26,7 +26,7 @@ trait RestDataObjectRead
 
     protected function getClass()
     {
-        return "\\Pimcore\\Model\\DataObject\\{$this->getClassName()}";
+        return $this->getClassName();
     }
 
     /**
@@ -72,7 +72,7 @@ trait RestDataObjectRead
     {
         $filters = $this->getListFilters();
 
-        $listClass = "\\Pimcore\\Model\\DataObject\\{$this->getClassName()}";
+        $listClass = $this->getClassName();
 
         if (!class_exists($listClass)) {
             throw new \InvalidArgumentException("Invalid class name given. {$listClass}");
